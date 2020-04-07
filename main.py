@@ -3,6 +3,9 @@ import sys
 
 DEFAULT_TEMPO = 0.5
 
+ARDUINO_CODE_MODE = False
+NUM_NOTES_TO_OUTPUT = None
+
 
 def ticks2s(ticks, tempo, ticks_per_beat):
     """
@@ -18,12 +21,38 @@ def note2freq(x):
     a = 440
     return (a/32) * (2 ** ((x-9)/12))
 
+def commandLineHelp():
+    print("Usage:\npython main.py {-a} {-n NUM_NOTES} inputfile.mid\n")
+    print("-a, --arduino\t\t\tOutput textfile as list of tone(outPin, freq, duration); calls that can be pasted into arduino sketch.\n")
+    print("-n, --num-notes\t[NUM_NOTES]\tOnly output the first NUM_NOTES that have duration greater than zero into output file\n")
+    print("-h, --help\t\t\tDisplay this help")
+
 
 if __name__ == '__main__':
 
-    # Import the MIDI file...
-    mid = MidiFile(sys.argv[1])
-
+    
+    # Parse command line options
+    if(len(sys.argv) < 2):
+        commandLineHelp()
+        sys.exit(1)
+    for i in range(1,len(sys.argv)-1):
+        if(  sys.argv[i] in ['-a', '--arduino']):
+            print("Arduino code output mode enabled")
+            ARDUINO_CODE_MODE = True
+            
+        elif(sys.argv[i] in ['-n', '--num-notes']):
+            try:
+                NUM_NOTES_TO_OUTPUT = int(sys.argv[i+1])
+            except ValueError:
+                print("-n option takes an INTEGER as an argument. Ex.\npython [filename].py -n 100")
+            print("Only outputting first %d notes" % NUM_NOTES_TO_OUTPUT)
+        
+        elif(sys.argv[i] in ['-h', '--help']):
+            commandLineHelp()
+            sys.exit(0)
+            
+    # Import the MIDI file...    
+    mid = MidiFile(sys.argv[-1])
     print("TYPE: " + str(mid.type))
     print("LENGTH: " + str(mid.length))
     print("TICKS PER BEAT: " + str(mid.ticks_per_beat))
@@ -99,9 +128,20 @@ if __name__ == '__main__':
     """
 
     he = ""
-    for msg in music:
-        he += str(msg[0])+"," + str(msg[1]) + "," +str(msg[2])+","+str(msg[3])+"\n"
+    
+    if(not ARDUINO_CODE_MODE):
+        for msg in music:
+            he += str(msg[0])+"," + str(msg[1]) + "," +str(msg[2])+","+str(msg[3])+"\n"
+    else:
+        nloop = len(music)
+        if(NUM_NOTES_TO_OUTPUT is not None):
+            nloop = NUM_NOTES_TO_OUTPUT
+        for i in range(0,nloop):
+            msg = music[i]
+            if(msg[1] > 0):
+                he += "tone(outPin, " + str(msg[2]) + ", " +str(int(msg[1]*1000)) + ");\n"
     f = open("./music.csv", "w")
-    f.write("#Total Time,Note Len,note2freq,velocity\n")
+    if(not ARDUINO_CODE_MODE):
+        f.write("#Total Time,Note Len,note2freq,velocity\n")
     f.write(he)
     f.close()
