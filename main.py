@@ -93,14 +93,15 @@ if __name__ == '__main__':
         b = tracksMerged[i+1][0]
         t = round(b-a, 3)
         m = tracksMerged[i]
-        music += [(t, round(note2freq(m[1])), m[2])]
+        music += [(m[0], t, round(note2freq(m[1])), m[2])]
     """
         Finally write it in CSV format in a file
     """
 
     he = ""
     for msg in music:
-        he += str(msg[0])+","+str(msg[1])+","+str(msg[2])+";"
-    f = open("/tmp/music.txt", "w")
+        he += str(msg[0])+","+str(msg[1])+","+str(msg[2])+"\n"
+    f = open("./music.csv", "w")
+    f.write("#Total Time,Note Len,note2freq,velocity\n")
     f.write(he)
     f.close()
