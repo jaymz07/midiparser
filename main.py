@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     he = ""
     for msg in music:
-        he += str(msg[0])+","+str(msg[1])+","+str(msg[2])+"\n"
+        he += str(msg[0])+"," + str(msg[1]) + "," +str(msg[2])+","+str(msg[3])+"\n"
     f = open("./music.csv", "w")
     f.write("#Total Time,Note Len,note2freq,velocity\n")
     f.write(he)
