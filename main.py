@@ -136,10 +136,14 @@ if __name__ == '__main__':
         nloop = len(music)
         if(NUM_NOTES_TO_OUTPUT is not None):
             nloop = NUM_NOTES_TO_OUTPUT
-        for i in range(0,nloop):
+        count = 0
+        i = 0
+        while count < nloop and i < len(music):
             msg = music[i]
             if(msg[1] > 0):
                 he += "tone(outPin, " + str(msg[2]) + ", " +str(int(msg[1]*1000)) + ");\n"
+                count += 1
+            i += i
     f = open("./music.csv", "w")
     if(not ARDUINO_CODE_MODE):
         f.write("#Total Time,Note Len,note2freq,velocity\n")
