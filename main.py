@@ -143,7 +143,7 @@ if __name__ == '__main__':
             if(msg[1] > 0):
                 he += "tone(outPin, " + str(msg[2]) + ", " +str(int(msg[1]*1000)) + ");\n"
                 count += 1
-            i += i
+            i += 1
     f = open("./music.csv", "w")
     if(not ARDUINO_CODE_MODE):
         f.write("#Total Time,Note Len,note2freq,velocity\n")
