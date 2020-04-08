@@ -35,7 +35,7 @@ if __name__ == '__main__':
     if(len(sys.argv) < 2):
         commandLineHelp()
         sys.exit(1)
-    for i in range(1,len(sys.argv)-1):
+    for i in range(1,len(sys.argv)):
         if(  sys.argv[i] in ['-a', '--arduino']):
             print("Arduino code output mode enabled")
             ARDUINO_CODE_MODE = True
