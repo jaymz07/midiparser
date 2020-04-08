@@ -5,6 +5,7 @@ DEFAULT_TEMPO = 0.5
 
 ARDUINO_CODE_MODE = False
 NUM_NOTES_TO_OUTPUT = None
+INSERT_DELAY = False
 
 
 def ticks2s(ticks, tempo, ticks_per_beat):
@@ -24,6 +25,7 @@ def note2freq(x):
 def commandLineHelp():
     print("Usage:\npython main.py {-a} {-n NUM_NOTES} inputfile.mid\n")
     print("-a, --arduino\t\t\tOutput textfile as list of tone(outPin, freq, duration); calls that can be pasted into arduino sketch.\n")
+    print("-d, --delay\t\t\tInsert delays in arduino C code so that song will play as pasted into editor.\n")
     print("-n, --num-notes\t[NUM_NOTES]\tOnly output the first NUM_NOTES that have duration greater than zero into output file\n")
     print("-h, --help\t\t\tDisplay this help")
 
@@ -46,6 +48,10 @@ if __name__ == '__main__':
             except ValueError:
                 print("-n option takes an INTEGER as an argument. Ex.\npython [filename].py -n 100")
             print("Only outputting first %d notes" % NUM_NOTES_TO_OUTPUT)
+        
+        elif(sys.argv[i] in ['-d', '--delay']):
+            INSERT_DELAY = True
+            print("Inserting delays in output arduino C code.")
         
         elif(sys.argv[i] in ['-h', '--help']):
             commandLineHelp()
@@ -142,6 +148,8 @@ if __name__ == '__main__':
             msg = music[i]
             if(msg[1] > 0):
                 he += "tone(outPin, " + str(msg[2]) + ", " +str(int(msg[1]*1000)) + ");\n"
+                if(INSERT_DELAY):
+                    he += "delay(" + str(int(msg[1]*1000)) + ");\n"
                 count += 1
             i += 1
     f = open("./music.csv", "w")
